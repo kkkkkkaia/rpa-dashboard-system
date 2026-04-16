@@ -9,19 +9,19 @@ let id = 1;
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
-  
+
   // 设置CORS头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   // 处理OPTIONS请求
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
     res.end();
     return;
   }
-  
+
   // 处理GET请求
   if (req.method === 'GET' && pathname === '/api/data') {
     res.statusCode = 200;
@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify(db));
     return;
   }
-  
+
   // 处理POST请求
   if (req.method === 'POST' && pathname === '/api/data') {
     let body = '';
@@ -52,7 +52,7 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
-  
+
   // 处理AI分析请求
   if (req.method === 'POST' && pathname === '/api/analyze') {
     let body = '';
@@ -79,21 +79,21 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
-  
+
   // 处理其他请求
   res.statusCode = 404;
   res.end('Not found');
 });
 
 // 启动服务器
-const port = 8080;
-server.listen(port, () => {
+const port = 8888;
+server.listen(port, '0.0.0.0', () => {
   console.log(`API服务器运行在 http://localhost:${port}`);
-  
+
   // 生成一些初始数据
   const categories = ['类别A', '类别B', '类别C', '类别D'];
   const names = ['数据项1', '数据项2', '数据项3', '数据项4', '数据项5'];
-  
+
   for (let i = 0; i < 10; i++) {
     db.push({
       id: id++,
@@ -103,7 +103,7 @@ server.listen(port, () => {
       timestamp: new Date().toISOString()
     });
   }
-  
+
   console.log('已生成初始数据');
   console.log('API服务器启动成功，等待请求...');
 });

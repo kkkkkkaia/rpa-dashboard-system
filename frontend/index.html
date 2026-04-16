@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RPA数据看板</title>
-    <!-- 引入CDN库 -->
     <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
@@ -81,8 +80,7 @@
     <div id="app">
       <div class="app-container">
         <h1>RPA数据看板</h1>
-        
-        <!-- 筛选器 -->
+
         <div class="filter-container">
           <select v-model="selectedCategory">
             <option value="">全部分类</option>
@@ -93,8 +91,7 @@
           <button @click="fetchData">刷新数据</button>
           <button @click="analyzeData">AI分析</button>
         </div>
-        
-        <!-- 图表区域 -->
+
         <div class="chart-container">
           <div class="chart-item">
             <h3>数据趋势</h3>
@@ -105,8 +102,7 @@
             <div ref="pieChart" class="chart"></div>
           </div>
         </div>
-        
-        <!-- 数据表格 -->
+
         <div class="table-container">
           <table>
             <thead>
@@ -129,18 +125,17 @@
             </tbody>
           </table>
         </div>
-        
-        <!-- AI分析结果 -->
+
         <div v-if="aiAnalysis" class="ai-container">
           <h3>AI智能分析</h3>
           <div class="ai-content">{{ aiAnalysis }}</div>
         </div>
       </div>
     </div>
-    
+
     <script>
       const { createApp } = Vue
-      
+
       createApp({
         data() {
           return {
@@ -159,7 +154,7 @@
         methods: {
           async fetchData() {
             try {
-              const response = await axios.get('http://localhost:8080/api/data')
+              const response = await axios.get('http://localhost:8888/api/data')
               this.data = response.data
               this.updateCategories()
               this.updateTableData()
@@ -185,13 +180,13 @@
             if (!this.trendChart) {
               this.trendChart = echarts.init(this.$refs.trendChart)
             }
-            
+
             const filteredData = this.selectedCategory
               ? this.data.filter(item => item.category === this.selectedCategory)
               : this.data
-            
+
             const sortedData = filteredData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-            
+
             const option = {
               xAxis: {
                 type: 'category',
@@ -206,14 +201,14 @@
                 smooth: true
               }]
             }
-            
+
             this.trendChart.setOption(option)
           },
           renderPieChart() {
             if (!this.pieChart) {
               this.pieChart = echarts.init(this.$refs.pieChart)
             }
-            
+
             const categoryData = {}
             this.data.forEach(item => {
               if (categoryData[item.category]) {
@@ -222,7 +217,7 @@
                 categoryData[item.category] = item.value
               }
             })
-            
+
             const option = {
               series: [{
                 type: 'pie',
@@ -230,17 +225,21 @@
                 data: Object.entries(categoryData).map(([name, value]) => ({ name, value }))
               }]
             }
-            
+
             this.pieChart.setOption(option)
           },
           async analyzeData() {
             try {
-              const response = await axios.post('http://localhost:8080/api/analyze', { data: this.data })
+              const response = await axios.post('http://localhost:8888/api/analyze', { data: this.data })
               const analysis = response.data
               this.aiAnalysis = `
-                分析摘要：${analysis.summary}\n\n
-                关键洞察：\n                ${analysis.insights.map(insight => `- ${insight}`).join('\n')}\n\n
-                建议：\n                ${analysis.recommendations.map(rec => `- ${rec}`).join('\n')}
+                分析摘要：${analysis.summary}
+
+                关键洞察：
+                ${analysis.insights.map(insight => `- ${insight}`).join('\n')}
+
+                建议：
+                ${analysis.recommendations.map(rec => `- ${rec}`).join('\n')}
               `
             } catch (error) {
               console.error('AI分析失败:', error)
