@@ -6,6 +6,7 @@
     <title>RPA数据看板系统</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.5"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -266,13 +267,21 @@
             color: #999;
             font-size: 12px;
         }
+        .error-message {
+            background: #fff1f0;
+            color: #f5222d;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffccc7;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <div class="app-container">
             <div class="header">
-                <h1>📊 RPA数据采集看板系统</h1>
+                <h1>📊 帖子实时分析看板</h1>
                 <p>实时数据监控 | 智能分析 | 动态可视化</p>
             </div>
 
@@ -287,6 +296,10 @@
                 <div class="status-item">
                     <span>📈 数据总量: {{ totalRecords }} 条</span>
                 </div>
+            </div>
+
+            <div v-if="error" class="error-message">
+                ⚠️ {{ error }}
             </div>
 
             <div class="stats-grid">
@@ -367,7 +380,7 @@
             </div>
 
             <div class="footer">
-                <p>RPA数据采集+动态看板+AI分析全栈系统 | 支持影刀RPA数据采集</p>
+                <p>帖子实时分析系统 | 基于Supabase数据源</p>
             </div>
         </div>
     </div>
@@ -375,12 +388,18 @@
     <script>
         const { createApp } = Vue
 
+        // Supabase配置
+        const supabaseUrl = 'https://kxpvyzokzwruustynjrk.supabase.co'
+        const supabaseKey = 'sb_publishable_WavBS4LVdCn_5okwYujlUA_mZuL-WPZ'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
         createApp({
             data() {
                 return {
                     data: [],
                     selectedCategory: '',
                     loading: false,
+                    error: '',
                     aiResult: '',
                     currentTime: '',
                     trendChart: null,
@@ -413,7 +432,6 @@
             mounted() {
                 this.updateTime()
                 setInterval(this.updateTime, 1000)
-                this.generateMockData()
                 this.refreshData()
             },
             methods: {
@@ -421,11 +439,45 @@
                     const now = new Date()
                     this.currentTime = now.toLocaleString('zh-CN')
                 },
+                async refreshData() {
+                    this.loading = true
+                    this.error = ''
+                    
+                    try {
+                        // 从Supabase获取数据
+                        const { data, error } = await supabase
+                            .from('帖子实时分析')
+                            .select('*')
+                            .order('created_at', { ascending: false })
+                        
+                        if (error) {
+                            throw new Error(`数据获取失败: ${error.message}`)
+                        }
+                        
+                        // 处理数据格式
+                        this.data = (data || []).map((item, index) => ({
+                            id: item.id || index + 1,
+                            name: item.name || `数据项${index + 1}`,
+                            value: item.value || 0,
+                            category: item.category || '未分类',
+                            timestamp: item.created_at || new Date().toISOString().slice(0, 19).replace('T', ' ')
+                        }))
+                        
+                        this.renderCharts()
+                    } catch (err) {
+                        this.error = err.message
+                        // 生成模拟数据作为备用
+                        this.generateMockData()
+                    } finally {
+                        this.loading = false
+                    }
+                },
                 generateMockData() {
                     const categories = ['类别A', '类别B', '类别C', '类别D']
                     const names = ['销售额', '订单量', '用户数', '访问量', '转化率', '活跃度']
                     const now = new Date()
 
+                    this.data = []
                     for (let i = 1; i <= 20; i++) {
                         this.data.push({
                             id: i,
@@ -435,13 +487,6 @@
                             timestamp: new Date(now - Math.random() * 86400000 * 7).toISOString().slice(0, 19).replace('T', ' ')
                         })
                     }
-                },
-                refreshData() {
-                    this.loading = true
-                    setTimeout(() => {
-                        this.renderCharts()
-                        this.loading = false
-                    }, 500)
                 },
                 renderCharts() {
                     this.renderTrendChart()
