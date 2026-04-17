@@ -9,7 +9,7 @@ db = []
 id_counter = 1
 
 categories = ['类别A', '类别B', '类别C', '类别D']
-names = ['数据项1', '数据项2', '数据项3', '数据项4', '数据项5']
+names = ['销售额', '订单量', '用户数', '访问量', '转化率', '活跃度']
 
 # 生成初始数据
 for _ in range(10):
@@ -82,12 +82,29 @@ class APIHandler(SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
-def run(port=8888):
+def run(port=3000):
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    server = HTTPServer(('0.0.0.0', port), APIHandler)
-    print(f'服务器运行在 http://localhost:{port}')
+    server_address = ('', port)
+    print(f'服务器启动中...')
+    print(f'工作目录: {os.getcwd()}')
+    print(f'监听端口: {port}')
     print(f'已生成{len(db)}条初始数据')
-    server.serve_forever()
+    print(f'API端点:')
+    print(f'  GET  /api/data     - 获取所有数据')
+    print(f'  POST /api/data     - 添加新数据')
+    print(f'  POST /api/analyze  - AI分析')
+    print(f'  GET  /dashboard.html - 数据看板')
+    print()
+    
+    try:
+        server = HTTPServer(server_address, APIHandler)
+        print(f'服务器运行在 http://localhost:{port}')
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print('\n服务器正在关闭...')
+        server.shutdown()
+    except Exception as e:
+        print(f'服务器启动失败: {e}')
 
 if __name__ == '__main__':
-    run()
+    run(3000)
