@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Vite
+frontend/dist/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+temp/
+tmp/

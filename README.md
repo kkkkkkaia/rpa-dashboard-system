@@ -1,114 +1,129 @@
-# RPA数据采集+动态看板+AI分析全栈系统
+# 数据分析看板
 
-## 系统架构
+基于 Flask 和 PostgreSQL 的数据分析看板，支持数据库查询、AI 智能分析等功能。
 
-### 1. 后端服务 (Node.js)
-- **功能**：提供RESTful API，连接MySQL数据库，处理数据的增删改查和AI分析请求
-- **技术栈**：Node.js, Express, MySQL2
-- **API端点**：
-  - `GET /api/data` - 获取所有数据
-  - `POST /api/data` - 插入数据（供RPA调用）
-  - `POST /api/analyze` - 进行AI分析
+## 📁 项目文件
 
-### 2. 前端应用 (Vue 3)
-- **功能**：实现数据看板，包含图表、表格、筛选器，动态展示数据库实时数据
-- **技术栈**：Vue 3, Axios, ECharts, Ant Design Vue
-- **主要功能**：
-  - 数据趋势图表
-  - 分类占比图表
-  - 数据表格
-  - 类别筛选器
-  - AI分析功能
+- `dashboard.html` - 前端看板页面
+- `start_server.py` - AI API 服务
+- `final_dashboard_server.py` - 数据库查询服务（完整版）
+- `config.py` - 数据库配置文件
 
-### 3. RPA数据采集 (Python)
-- **功能**：模拟影刀爬取数据，通过API写入数据库
-- **技术栈**：Python, Requests
+## 🚀 启动方式
 
-### 4. AI集成
-- **功能**：调用影刀AI Power API，对看板指定板块进行智能洞察分析
-- **技术栈**：Node.js, Axios
+### 1. 启动 AI API 服务（端口 8000）
 
-## 部署指南
-
-### 1. 环境准备
-- Node.js 14.0+
-- Python 3.7+
-- MySQL 5.7+
-
-### 2. 后端部署
-1. 克隆项目到本地
-2. 安装依赖：`npm install`
-3. 配置MySQL数据库连接信息
-4. 启动后端服务：`npm start`
-
-### 3. 前端部署
-1. 进入frontend目录
-2. 安装依赖：`npm install`
-3. 构建项目：`npm run build`
-4. 将构建产物部署到Web服务器
-
-### 4. RPA部署
-1. 安装Python依赖：`pip install requests`
-2. 运行RPA脚本：`python rpa_script.py`
-
-### 5. 环境变量配置
-
-#### 后端环境变量
-- `DB_HOST` - 数据库主机
-- `DB_USER` - 数据库用户名
-- `DB_PASSWORD` - 数据库密码
-- `DB_NAME` - 数据库名称
-- `PORT` - 后端服务端口
-
-#### 前端环境变量
-- `VITE_API_BASE_URL` - 后端API基础URL
-
-## 系统功能
-
-1. **数据采集**：RPA脚本通过API将数据写入数据库
-2. **数据展示**：前端看板实时展示数据库中的数据，包括图表和表格
-3. **数据筛选**：支持按类别筛选数据
-4. **AI分析**：对看板数据进行智能洞察分析，提供关键洞察和建议
-
-## 项目结构
-
-```
-├── backend/           # 后端代码
-│   ├── index.js       # 主入口文件
-│   ├── package.json   # 依赖配置
-│   └── .env           # 环境变量
-├── frontend/          # 前端代码
-│   ├── src/           # 源代码
-│   ├── public/        # 静态资源
-│   ├── package.json   # 依赖配置
-│   └── vite.config.js # Vite配置
-├── rpa/               # RPA脚本
-│   └── rpa_script.py  # 数据采集脚本
-└── README.md          # 项目文档
+```bash
+python start_server.py
 ```
 
-## 示例数据
+服务地址：`http://localhost:8000`
 
-系统启动时会自动生成一些示例数据，包括不同类别的数据项，用于测试和演示系统功能。
+### 2. 启动前端服务（端口 3000）
 
-## 注意事项
+```bash
+python -m http.server 3000
+```
 
-1. 确保MySQL数据库已创建并可访问
-2. 确保后端服务和前端应用在同一网络环境中
-3. 如需部署到公网，需要配置相应的网络和安全设置
-4. 实际使用中，需要替换影刀AI Power API的模拟实现为真实的API调用
+服务地址：`http://localhost:3000`
 
-## 系统演示
+## 🌐 访问方式
 
-1. 启动后端服务
-2. 运行RPA脚本生成数据
-3. 访问前端应用查看数据看板
-4. 点击"AI分析"按钮查看智能洞察分析结果
+### 方式一：直接打开文件
+在浏览器中直接打开 `dashboard.html` 文件
 
-## 技术支持
+### 方式二：通过 HTTP 服务访问
+启动前端服务后，在浏览器访问：
+```
+http://localhost:3000/dashboard.html
+```
 
-如遇到问题，请参考以下资源：
-- Node.js官方文档：https://nodejs.org/en/docs/
-- Vue 3官方文档：https://vuejs.org/guide/
-- MySQL官方文档：https://dev.mysql.com/doc/
-- ECharts官方文档：https://echarts.apache.org/zh/index.html
+## 📊 功能模块
+
+### 1. 核心指标
+- 总发帖量
+- 总浏览量
+- 篇均浏览量
+- 消极情绪占比
+
+### 2. 发帖趋势
+- 最近 30 天每天的帖子数量
+- 最近 30 天每天的浏览量
+- 趋势折线图展示
+
+### 3. 问题类型分布
+- 浏览器兼容
+- 元素定位
+- 数据采集
+- 循环逻辑
+- Excel 操作
+- AI 应用
+- 产品咨询
+- 第三方集成
+
+### 4. 情感分布
+- 积极帖子数量和占比
+- 中性帖子数量和占比
+- 消极帖子数量和占比
+
+### 5. 交叉分析
+- 按问题类型分组
+- 统计每种类型下的积极、中性、消极数量
+
+### 6. 核心贡献者
+- 发帖量前 10 的作者
+- 累计浏览量
+
+### 7. 热度追踪
+- 浏览量前 10 的帖子
+- 显示标题、作者、发布时间、问题类型、情感、浏览量、链接
+
+### 8. AI 智能分析
+点击"发帖趋势"卡片中的"智能分析"按钮，系统会：
+- 调用 AI API 获取分析数据
+- 解析 CSV 格式的分析结果
+- 生成详细的文字分析报告
+
+## 🔧 数据库配置
+
+数据库配置文件：`config.py`
+
+```python
+SQLALCHEMY_DATABASE_URI = os.getenv(
+    'DATABASE_URL',
+    'postgresql://用户名:密码@主机:端口/数据库名'
+)
+```
+
+## 🔑 API 配置
+
+AI API 配置文件：`start_server.py`
+
+```python
+AI_API_URL = 'https://power-api.yingdao.com/oapi/power/v1/rest/flow/d3f1235e-9eab-4b17-bd65-6514d4f8b7c7/execute'
+AI_API_KEY = os.getenv('AI_API_KEY', 'AP_b3D47FdfG2NEDmRN')
+```
+
+## 📝 使用说明
+
+1. 修改 `config.py` 中的数据库连接配置
+2. 启动 AI API 服务：`python start_server.py`
+3. 启动前端服务：`python -m http.server 3000`
+4. 在浏览器中打开 `dashboard.html`
+5. 点击"刷新数据"按钮加载数据库数据
+6. 点击"智能分析"按钮获取 AI 分析结果
+
+## 🎨 技术栈
+
+- **前端**：HTML5 + CSS3 + JavaScript
+- **图表库**：Chart.js
+- **UI 框架**：Bootstrap 5.3
+- **后端**：Python HTTP Server
+- **数据库**：PostgreSQL (Supabase)
+- **ORM**：SQLAlchemy 1.4.46
+
+## ⚠️ 注意事项
+
+- 确保数据库连接配置正确
+- 确保 AI API Key 有效
+- 建议使用 Chrome、Firefox、Edge 等现代浏览器访问
